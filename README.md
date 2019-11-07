@@ -40,6 +40,7 @@ python3 WikiExtractor.py -o \
 
 
 
+# 
 
 ### dynamic provisioning EC2(worker) on AWS
 
@@ -48,6 +49,8 @@ python3 WikiExtractor.py -o \
 
 ```shell
 (run on your local pc)
+chmod +x init.sh
+./init.sh
 git clone https://github.com/graykode/mlm-pipeline
 
 export AWS_ACCESS_KEY_ID='xxxxxxx'
@@ -104,8 +107,10 @@ ansible-playbook -i ./inventory/ec2.py \
 ```shell
 (in ventilation and sink ec2)
 wget https://raw.githubusercontent.com/graykode/mlm-pipeline/master/init.sh
-chmod +x init.sh
-./init.sh
+# init shell for ventilator and sink
+sudo apt update && sudo apt install -y python3 && \
+      sudo apt install -y python3-pip && \
+      pip3 install zmq
 ```
 
 
