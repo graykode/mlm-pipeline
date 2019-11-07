@@ -24,13 +24,13 @@
 
     - name: run worker
       shell: |
-        python3 /tmp/worker.py \
+        nobup python3 /tmp/worker.py \
         --output_folder=/tmp/output \
         --vocab_file=/tmp/vocab.txt \
         --wiki_data=True \
         --bucket_name={{ bucket_name }} \
         --vserver={{ vserver }} \
         --sserver={{ sserver }} \
-        > /tmp/logger.log
+        > /tmp/logger.log &
 
 # end
