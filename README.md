@@ -128,7 +128,7 @@ ansible-playbook -i ./inventory/ec2.py \
 python3 ventilator.py \
   --data 'data folder path' \
   --vport 5557 \
-  --sport 5556
+  --time 0.88  
 ```
 
 
