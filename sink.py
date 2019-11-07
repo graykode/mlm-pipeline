@@ -27,10 +27,9 @@ def main(args):
 
     for task_no in range(v):
         data = sock.recv_string()
-        print(data)
         if data == 'DONE':
             cnt += 1
-            print("%d/%d(%.2f) TASKS WAS DONE" % (cnt, v, (cnt / v) * 100))
+            print("%d/%d(%.2f) percent TASKS WAS DONE" % (cnt, v, (cnt / v) * 100))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='sink for masked '
