@@ -5,19 +5,18 @@
 [<img width="400"
 src="https://user-images.githubusercontent.com/32828768/49876264-ff2e4180-fdf0-11e8-9512-06ffe3ede9c5.png">](https://jalammar.github.io/illustrated-bert/)
 
-<img src="https://i.imgur.com/9iZ0Gdl.png" height="400px;" />
+<img src="image/readme.png" height="400px;" />
 
 In NLP, a masked Languge Model (MLM) such as BERT, XLM, RoBERTa, and ALBERT, pretraining the sentence's input with `[MASK]` is a state-of-a-art.
 
-```text
-Input Text: the man jumped up , put his basket on phil ##am ##mon ' s head Original Masked Input: [MASK] man [MASK] up , put his [MASK] on phil [MASK] ##mon ' s head
-```
+`Input Text: the man jumped up , put his basket on phil ##am ##mon ' s head`
+`Original Masked Input: [MASK] man [MASK] up , put his [MASK] on phil
+[MASK] ##mon ' s head`
 
 However, the preprocessing process of tokenizing and masking a few hundred GB of large text takes a lot of time with a single node. We use a multi-node architecture that distributes preprocessing through the cloud architecture's pipeline design with **pull-push pattern**.
 
 - `ventilator` : Read large text and deliver message to zmq's queue. ventilator is a single node.
 - `worker` : 1) BERT Tokenizer, 2) Create Masked on sentences, 3) push preprocessed tfrecord to S3
-- `sink` : logging total worker's jobs. Also sink is a single node.
 - `worker controller` : using Terraform, Ansible, we can control all ec2s and dynamic provisioning ec2 on AWS.
 
 
@@ -63,7 +62,7 @@ terraform init
 change some variable in [variables.tf](https://github.com/graykode/mlm-pipeline/blob/master/worker_controller/terraform/variables.tf)
 
 - region, zone, **number_of_worker** , client_instance_type, volume_size, **client_subnet**, **client_security_groups**, default_keypair_name
-- you must **open ventilation and sink port** when create client_security_groups.
+- you must **open ventilation port** when create client_security_groups.
 
 Then run below:
 
@@ -102,12 +101,12 @@ ansible-playbook -i ./inventory/ec2.py \
 
 
 
-### ventilation and sink setting
+### ventilation setting
 
 ```shell
-(in ventilation and sink ec2)
+(in ventilation ec2)
 wget https://raw.githubusercontent.com/graykode/mlm-pipeline/master/init.sh
-# init shell for ventilator and sink
+# init shell for ventilator
 sudo apt update && sudo apt install -y python3 && \
       sudo apt install -y python3-pip && \
       pip3 install zmq
@@ -115,27 +114,21 @@ sudo apt update && sudo apt install -y python3 && \
 
 
 
-### Start in sink, workers and ventilation order
+### Start in workers and ventilation order
 
 ```shell
-(in sink ec2)
-python3 sink.py --sport 5556
-
 (run on your local pc)
 ansible-playbook -i ./inventory/ec2.py \
       --limit "tag_type_worker" \
       -u ubuntu \
       --private-key ~/.ssh/SoRT.pem working.yaml \
-      --extra-vars "bucket_name=<bucket_name> vserver=<ventilator_ip> sserver=<sink_ip>"
+      --extra-vars "bucket_name=<bucket_name> vserver=<ventilator_ip>"
       
 (in ventilation ec2)
 python3 ventilator.py \
   --data 'data folder path' \
   --vport 5557 \
-  --sserver '<sink_ip>' \
-  --sport 5556
-  
-# log progress on sink server
+  --time 0.88  
 ```
 
 
