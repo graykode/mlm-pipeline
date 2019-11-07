@@ -40,12 +40,13 @@ def main(args):
     # input("> IF YOU'RE READY, PRESS ENTER TO START")
     print('%d files....' % (len(files)))
 
-    for file in enumerate(files):
+    for i, file in enumerate(files):
         with open(file, 'r', encoding='utf-8') as f:
             sock.send_json({
                 'key' : str(uuid.uuid4()),
                 'text' : f.read()
             })
+        print(i)
         time.sleep(args.time)
 
     ctx.destroy()
