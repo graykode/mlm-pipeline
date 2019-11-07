@@ -5,7 +5,7 @@
 [<img width="400"
 src="https://user-images.githubusercontent.com/32828768/49876264-ff2e4180-fdf0-11e8-9512-06ffe3ede9c5.png">](https://jalammar.github.io/illustrated-bert/)
 
-<img src="https://i.imgur.com/8k8nTaD.png" height="400px;" />
+<img src="image/readme.png" height="400px;" />
 
 In NLP, a masked Languge Model (MLM) such as BERT, XLM, RoBERTa, and ALBERT, pretraining the sentence's input with `[MASK]` is a state-of-a-art.
 
@@ -128,7 +128,7 @@ ansible-playbook -i ./inventory/ec2.py \
 python3 ventilator.py \
   --data 'data folder path' \
   --vport 5557 \
-  --sport 5556
+  --time 0.88  
 ```
 
 
