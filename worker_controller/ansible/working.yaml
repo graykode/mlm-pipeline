@@ -30,7 +30,6 @@
         --wiki_data=True \
         --bucket_name={{ bucket_name }} \
         --vserver={{ vserver }} \
-        --sserver={{ sserver }} \
         > /tmp/logger.log &
 
 # end

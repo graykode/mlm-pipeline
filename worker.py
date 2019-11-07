@@ -38,8 +38,8 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string('vserver', '127.0.0.1', 'ventilator server ip address')
 flags.DEFINE_integer('vport', 5557, 'ventilator port')
 
-flags.DEFINE_string('sserver', '127.0.0.1', 'sink server ip address')
-flags.DEFINE_integer('sport', 5556, 'sink port')
+# flags.DEFINE_string('sserver', '127.0.0.1', 'sink server ip address')
+# flags.DEFINE_integer('sport', 5556, 'sink port')
 
 flags.DEFINE_string('vocab_file', './vocab.txt', 'The vocabulary file that '
                                         'the BERT model was trained on.')
@@ -523,14 +523,14 @@ def truncate_seq_pair(
 
 
 def main(_):
-    server_pull, server_push = FLAGS.vserver, FLAGS.sserver
-    port_pull, port_push = FLAGS.vport, FLAGS.sport
+    server_pull = FLAGS.vserver
+    port_pull = FLAGS.vport
 
     sock_pull = ctx.socket(zmq.PULL)
     sock_pull.connect("tcp://%s:%d" % (server_pull, port_pull))
 
-    sock_push = ctx.socket(zmq.PUSH)
-    sock_push.connect("tcp://%s:%d" % (server_push, port_push))
+    # sock_push = ctx.socket(zmq.PUSH)
+    # sock_push.connect("tcp://%s:%d" % (server_push, port_push))
 
     tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -570,7 +570,7 @@ def main(_):
             Body=file, ACL='public-read'
         )
 
-        sock_push.send_string('DONE') # send to sink
+        # sock_push.send_string('DONE') # send to sink
 
 if __name__ == '__main__':
     flags.mark_flag_as_required('output_folder')
@@ -581,8 +581,8 @@ if __name__ == '__main__':
 
     flags.mark_flag_as_required('vserver')
     flags.mark_flag_as_required('vport')
-    flags.mark_flag_as_required('sserver')
-    flags.mark_flag_as_required('sport')
+    # flags.mark_flag_as_required('sserver')
+    # flags.mark_flag_as_required('sport')
 
     if not os.path.isdir(FLAGS.output_folder):
         os.mkdir(FLAGS.output_folder)
