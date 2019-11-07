@@ -9,9 +9,9 @@ src="https://user-images.githubusercontent.com/32828768/49876264-ff2e4180-fdf0-1
 
 In NLP, a masked Languge Model (MLM) such as BERT, XLM, RoBERTa, and ALBERT, pretraining the sentence's input with `[MASK]` is a state-of-a-art.
 
-```text
-Input Text: the man jumped up , put his basket on phil ##am ##mon ' s head Original Masked Input: [MASK] man [MASK] up , put his [MASK] on phil [MASK] ##mon ' s head
-```
+`Input Text: the man jumped up , put his basket on phil ##am ##mon ' s head`
+`Original Masked Input: [MASK] man [MASK] up , put his [MASK] on phil
+[MASK] ##mon ' s head`
 
 However, the preprocessing process of tokenizing and masking a few hundred GB of large text takes a lot of time with a single node. We use a multi-node architecture that distributes preprocessing through the cloud architecture's pipeline design with **pull-push pattern**.
 
