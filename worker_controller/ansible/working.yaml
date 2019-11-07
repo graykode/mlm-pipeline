@@ -1,0 +1,34 @@
+- hosts: all
+  tasks:
+    - name: delete before worker.py
+      shell: "rm /tmp/worker.py"
+      ignore_errors: yes
+
+    - name: copy python script
+      copy:
+        src: "../../worker.py"
+        dest: "/tmp/worker.py"
+        owner: ubuntu
+
+    - name: copy tokenization script
+      copy:
+        src: "../../tokenization.py"
+        dest: "/tmp/tokenization.py"
+        owner: ubuntu
+
+    - name: copy vocab text
+      copy:
+        src: "../../vocab.txt"
+        dest: "/tmp/vocab.txt"
+        owner: ubuntu
+
+    - name: run worker
+      shell: |
+        python3 /tmp/worker.py
+         --output_folder=/tmp/output
+         --vocab_file=/tmp/vocab.txt
+         --wiki_data=True
+         --bucket_name={{ bucket_name }}
+         > /tmp/logger.log
+
+# end

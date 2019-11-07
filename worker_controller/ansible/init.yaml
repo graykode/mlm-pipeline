@@ -1,0 +1,25 @@
+- hosts: all
+  vars:
+    os_environment:
+      - key: AWS_ACCESS_KEY_ID
+        value: "{{ aws_access_key_id }}"
+      - key: AWS_SECRET_ACCESS_KEY
+        value: "{{ aws_secret_access_key }}"
+  become: true
+
+  tasks:
+    - name: ec2 initialization
+      command: "{{ item }}"
+      with_items:
+        - "apt update"
+        - "apt install -y python3"
+        - "apt install -y python3-pip"
+        - "pip3 install zmq bs4 boto3 tensorflow==1.14.0"
+
+    - name: populate /etc/environment
+      lineinfile:
+        dest: "/etc/environment"
+        state: present
+        regexp: "^{{ item.key }}"
+        line: "{{ item.key }}={{ item.value }}"
+      with_items: "{{ os_environment }}"
