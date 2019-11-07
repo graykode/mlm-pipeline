@@ -24,7 +24,7 @@
 
     - name: run worker
       shell: |
-        nobup python3 /tmp/worker.py \
+        nohup python3 /tmp/worker.py \
         --output_folder=/tmp/output \
         --vocab_file=/tmp/vocab.txt \
         --wiki_data=True \
