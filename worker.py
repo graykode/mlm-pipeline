@@ -48,6 +48,9 @@ flags.DEFINE_string(
     "output_folder", 'output',
     "folder where Output TF example file to be saved")
 
+flags.DEFINE_string("bucket_name", None, "bucket name")
+flags.DEFINE_string("bucket_key", 'output', "bucket key")
+
 flags.DEFINE_bool('wiki_data', True, 'Is wiki data?')
 flags.DEFINE_bool('do_lower_case', True, 'Whether to lower case the input text. Should be True for uncased models and False for cased models.')
 
@@ -69,7 +72,6 @@ flags.DEFINE_float('masked_lm_prob', 0.15, 'Masked LM probability.')
 
 flags.DEFINE_float('short_seq_prob', 0.1,
                    'Probability of creating sequences which are shorter than the maximum length.')
-
 
 class TrainingInstance(object):
     """A single training instance (sentence pair)."""
@@ -525,10 +527,10 @@ def main(_):
     port_pull, port_push = FLAGS.vport, FLAGS.sport
 
     sock_pull = ctx.socket(zmq.PULL)
-    sock_pull.connect(f'tcp://{server_pull}:{port_pull}')
+    sock_pull.connect("tcp://%s:%d" % (server_pull, port_pull))
 
     sock_push = ctx.socket(zmq.PUSH)
-    sock_push.connect(f'tcp://{server_push}:{port_push}')
+    sock_push.connect("tcp://%s:%d" % (server_push, port_push))
 
     tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -561,10 +563,27 @@ def main(_):
                                         FLAGS.max_predictions_per_seq,
                                         output_file)
 
+        # upload tfrecord to s3
+        file = open(output_file, 'rb')
+        s3.Bucket(FLAGS.bucket_name).put_object(
+            Key=FLAGS.bucket_key+'/'+key+'.tfrecord',
+            Body=file, ACL='public-read'
+        )
+
         sock_push.send_string('DONE') # send to sink
 
 if __name__ == '__main__':
-    # flags.mark_flag_as_required('output_folder')
-    # flags.mark_flag_as_required('vocab_file')
-    # flags.mark_flag_as_required('wiki_data')
+    flags.mark_flag_as_required('output_folder')
+    flags.mark_flag_as_required('vocab_file')
+    flags.mark_flag_as_required('wiki_data')
+    flags.mark_flag_as_required('bucket_name')
+    flags.mark_flag_as_required('bucket_key')
+
+    flags.mark_flag_as_required('vserver')
+    flags.mark_flag_as_required('vport')
+    flags.mark_flag_as_required('sserver')
+    flags.mark_flag_as_required('sport')
+
+    if not os.path.isdir(FLAGS.output_folder):
+        os.mkdir(FLAGS.output_folder)
     tf.app.run()

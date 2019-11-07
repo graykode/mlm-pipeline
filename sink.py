@@ -16,17 +16,18 @@ ctx = zmq.Context()
 
 def main(args):
     sock = ctx.socket(zmq.PULL)
-    sock.bind(f'tcp://*:{args.sport}')
+    sock.bind("tcp://*:%d" % (args.sport))
 
-    print(f"STARTING SERVER AT {args.sport}")
+    print("STARTING SERVER AT %d" % (args.sport))
 
     sig_start = sock.recv()
     v = int.from_bytes(sig_start, 'big')
-    print(f"GATHER {v} TASKS.")
+    print("GATHER %d TASKS." % (v))
     cnt = 0
 
     for task_no in range(v):
         data = sock.recv_string()
+        print(data)
         if data == 'DONE':
             cnt += 1
             print("%d/%d(%.2f) TASKS WAS DONE" % (cnt, v, (cnt / v) * 100))

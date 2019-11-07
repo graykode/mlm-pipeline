@@ -21,20 +21,21 @@ ctx = zmq.Context()
 
 def main(args):
     sock = ctx.socket(zmq.PUSH)
-    sock.bind(f'tcp://*:{args.vport}')
+    sock.bind('tcp://*:%d' % (args.vport))
 
     cmd = ctx.socket(zmq.PUSH)
-    cmd.connect(f'tcp://{args.sserver}:{args.sport}')
+    cmd.connect('tcp://%s:%d' % (args.sserver, args.sport))
 
     files = []
     for filename in Path(args.data).rglob('*'):
+        filename = str(filename)
         if os.path.isfile(filename):
             files.append(filename) # 100(0~99) * 26(A-Z) * 26(A-Z)
 
     # send total number of files to `sink`
     cmd.send(len(files).to_bytes(8, 'big'))
 
-    print(f"START VENT SERVER")
+    print("START VENT SERVER")
     input("> IF YOU'RE READY, PRESS ENTER TO START")
     print('%d files....' % (len(files)))
 
